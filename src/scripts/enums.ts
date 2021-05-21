@@ -4,3 +4,11 @@ export enum Direction {
 	Left = "left",
 	Right = "right"
 };
+
+export enum Color {
+	Black = "black",
+	Blue = "blue",
+	Yellow = "yellow",
+	Red = "red",
+	Green = "green"
+};

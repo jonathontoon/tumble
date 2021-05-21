@@ -1,8 +1,7 @@
 import Canvas from "./canvas";
-import Floor from "./floor";
-import Snake from "./snake";
+import Sprite from "./sprite";
 
-import { Direction } from "./enums";
+import { Color, Direction } from "./enums";
 
 class Game {
 
@@ -11,8 +10,8 @@ class Game {
 
 	private canvas: Canvas;
 
-	private floorTiles: Floor[][];
-	private snake: Snake;
+	private colors: Color[];
+	private blocks: Sprite[][];
 
 	private animationFrameCallback: FrameRequestCallback;
 	private keyDownEventListener: EventListener;
@@ -22,16 +21,16 @@ class Game {
 		this.numberOfTiles = numberOfTiles;
 
 		this.canvas = new Canvas("viewport", this.tileSize * this.numberOfTiles);
+		this.colors = [Color.Blue, Color.Green, Color.Red, Color.Yellow];
 
-		this.floorTiles = [];
+		this.blocks = [];
 		for (let i = 0; i < this.numberOfTiles; i++) {
-			this.floorTiles[i] = [];
+			this.blocks[i] = [];
 			for (let j = 0; j < this.numberOfTiles; j++) {
-				this.floorTiles[i][j] = new Floor(i, j, this.tileSize);
+				const randomColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+				this.blocks[i][j] = new Sprite(i, j, this.tileSize, randomColor);
 			}
 		}
-
-		this.snake = new Snake(0, 0, this.tileSize);
 
 		this.animationFrameCallback = this.handleRequestAnimationFrame.bind(this);
 		this.keyDownEventListener = this.handleKeyDown.bind(this);
@@ -46,13 +45,11 @@ class Game {
 
 	private handleRequestAnimationFrame(): void {
 		this.canvas.render((context: CanvasRenderingContext2D) => {
-			this.floorTiles.forEach((floorTileColumn) => {
-				floorTileColumn.forEach((tile) => {
-					tile.render(context);
+			this.blocks.forEach((column) => {
+				column.forEach((block) => {
+					block.render(context);
 				});
 			});
-	
-			this.snake.render(context);
 		});
 
 		window.requestAnimationFrame(this.animationFrameCallback);

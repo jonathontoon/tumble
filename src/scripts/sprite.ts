@@ -1,13 +1,15 @@
+import { Color } from "./enums";
+
 class Sprite {
-	public x: number;
-	public y: number;
+	public row: number;
+	public column: number;
 	
 	private size: number;
-	private color: string;
+	private color: Color;
 
-	constructor(x: number, y: number, size: number, color: string) {
-		this.x = x;
-		this.y = y;
+	constructor(row: number, column: number, size: number, color: Color) {
+		this.row = row;
+		this.column = column;
 		this.size = size;
 		this.color = color;
 	};
@@ -15,7 +17,7 @@ class Sprite {
 	public render(context: CanvasRenderingContext2D): void {
 		context.beginPath();
 		context.fillStyle = this.color;
-		context.rect(this.x * this.size, this.y * this.size, this.size, this.size);
+		context.rect(this.row * this.size, this.column * this.size, this.size, this.size);
 		context.fill();
 		context.closePath();
 	};

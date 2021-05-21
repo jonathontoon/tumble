@@ -1,5 +1,5 @@
 import { Direction } from "./enums";
-import Floor from "./floor";
+import Floor from "./tile";
 import Snake from "./snake";
 
 class World {
