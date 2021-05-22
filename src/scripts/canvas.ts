@@ -7,7 +7,6 @@ class Canvas {
 	constructor(id: string, size: number) {
 		this.element = document.getElementById(id) as HTMLCanvasElement;
 		this.context = this.element.getContext("2d") as CanvasRenderingContext2D;
-		this.context.imageSmoothingEnabled = false;
 		
 		this.element.style.width = `${size}px`;
 		this.element.style.height = `${size}px`;
