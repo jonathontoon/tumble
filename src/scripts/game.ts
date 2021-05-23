@@ -21,7 +21,9 @@ class Game {
 
 	private handleRequestAnimationFrame(): void {
 		this.canvas.render((context: CanvasRenderingContext2D) => {
+			context.save();
 			this.board.render(context);
+			context.restore();
 		});
 
 		window.requestAnimationFrame(this.animationFrameCallback);
