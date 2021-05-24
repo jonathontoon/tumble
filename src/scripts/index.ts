@@ -33,27 +33,43 @@ interface Coordinates {
 		return row >= 0 && row < numberOfTiles && column >= 0 && column < numberOfTiles;
 	};
 
-	function tilesToMatch(row: number, column: number, color: string): void {
-		const tilesChecked: Tile[] = [];
-		const tilesToCheck: Tile[] = [];
-		tilesToCheck.push(tileBoard[row][column]);
+	function fill(row: number, column: number, color: string): void {
+		const checkedTiles: Tile[] = [];
 
-		while (tilesToCheck.length > 0) {
-			const tile: Tile | undefined = tileBoard[row][column];
-
-			if (tile && (tile.color !== color || !tile.visible || tilesChecked.includes(tile))) {
-				continue;
+		function flow(row: number, column: number, color: string): void {
+			if (row >= 0 && row < tileBoard.length && column >= 0 && column < tileBoard[row].length) {
+				if (!checkedTiles.includes(tileBoard[row][column])) {
+					if (tileBoard[row][column].color === color) {
+						tileBoard[row][column].visible = false;
+	
+						checkedTiles.push(tileBoard[row][column]);
+						flow(row-1, column, color);    // check up
+						flow(row+1, column, color);    // check down
+						flow(row, column-1, color);    // check left
+						flow(row, column+1, color);    // check right
+					}
+				}
 			}
-
-			tile.visible = false;
-
-			tilesChecked.push(tile);
-
-			tilesToCheck.push(tileBoard[row - 1][column]);
-			tilesToCheck.push(tileBoard[row][column + 1]);
-			tilesToCheck.push(tileBoard[row + 1][column]);
-			tilesToCheck.push(tileBoard[row][column - 1]);
 		};
+
+		flow(row, column, color);
+	};
+
+	function tilesToMatch(row: number, column: number, color: string): void {
+		if (row < 0 || row >= numberOfTiles || column < 0 || row >= numberOfTiles) {
+			return;
+		}
+
+		if (tileBoard[row][column].color !== color) {
+			return;
+		}
+
+		tileBoard[row][column].visible = false;
+
+		tilesToMatch(row - 1, column, color);
+		tilesToMatch(row + 1, column, color);
+		tilesToMatch(row, column - 1, color);
+		tilesToMatch(row, column + 1, color);
 	};
 	
 	function compressRows(): void {
@@ -140,18 +156,20 @@ interface Coordinates {
 		}
 	};
 
-	// function getMousePosition(canvas: HTMLCanvasElement, e: MouseEvent): Coordinates {
-	// 	const rect: DOMRect = canvas.getBoundingClientRect();
-	// 	return {
-	// 		x: e.clientX - rect.left,
-	// 		y: e.clientY - rect.top
-	// 	};
-	// }
+	function getMousePosition(canvas: HTMLCanvasElement, e: MouseEvent): Coordinates {
+		const rect: DOMRect = canvas.getBoundingClientRect();
+		return {
+			x: e.clientX - rect.left,
+			y: e.clientY - rect.top
+		};
+	}
 
 	function handleDOMContentLoaded(): void {
 		tileBoard = generateBoard();
-		tilesToMatch(5, 5, tileBoard[5][5].color);
+		// console.log(fill(3, 3, tileBoard[3][3].color));
 		console.log(tileBoard);
+		// compressRows();
+		// compressColumns();
 	};
 
 	function handleRequestAnimationFrame(): void {
@@ -159,18 +177,18 @@ interface Coordinates {
 		window.requestAnimationFrame(handleRequestAnimationFrame);
 	};
 
-	// function handleOnClick(event: MouseEvent): void {
-	// 	const mousePosition = getMousePosition(canvasElement, event);
-	// 	const row = Math.floor(mousePosition.x / tileSize);
-	// 	const column = Math.floor(mousePosition.y / tileSize);
+	function handleOnClick(event: MouseEvent): void {
+		const mousePosition = getMousePosition(canvasElement, event);
+		const row = Math.floor(mousePosition.x / tileSize);
+		const column = Math.floor(mousePosition.y / tileSize);
 
-	// 	// tilesToMatch(row, column, tileBoard[row][column].color);
-	// 	// compressRows();
-	// 	// compressColumns();
-	// };
+		fill(row, column, tileBoard[row][column].color);
+		// compressRows();
+		// compressColumns();
+	};
 
 	document.addEventListener("DOMContentLoaded", (handleDOMContentLoaded), false);
 	window.requestAnimationFrame(handleRequestAnimationFrame);
-	// canvasElement.addEventListener("click", handleOnClick, false);
+	canvasElement.addEventListener("click", handleOnClick, false);
 
 })();
