@@ -53,6 +53,12 @@ interface Coordinates {
 		};
 
 		flow(row, column, color);
+
+		console.log(checkedTiles.length);
+
+		if (checkedTiles.length === 1) {
+			checkedTiles[0].visible = true;
+		}
 	};
 
 	function tilesToMatch(row: number, column: number, color: string): void {
@@ -77,14 +83,14 @@ interface Coordinates {
 		
 		for (let column: number = 0; column < numberOfTiles; column++) {
 			for (let row: number = numberOfTiles - 1; row >= 0; row--) {
-				if (!tileBoard[row][column].visible) {
+				if (!tileBoard[column][row].visible) {
 					currentRow = row - 1;
 
 					while(currentRow >= 0) {
-						if (tileBoard[currentRow][column].visible) {
-							tileBoard[row][column].row = tileBoard[currentRow][column].row;
-							tileBoard[row][column].column = tileBoard[currentRow][column].column;
-							tileBoard[row][column].color = tileBoard[currentRow][column].color;
+						if (tileBoard[column][currentRow].visible) {
+							tileBoard[column][row].row = tileBoard[column][currentRow].row;
+							tileBoard[column][row].column = tileBoard[column][currentRow].column;
+							tileBoard[column][row].color = tileBoard[column][currentRow].color;
 
 							currentRow = 0;
 						}
@@ -99,16 +105,16 @@ interface Coordinates {
 		let currentColumn: number;
 
 		for(let column: number = 0; column < numberOfTiles; column++) {
-			if (!tileBoard[numberOfTiles - 1][column].visible) {
+			if (!tileBoard[column][numberOfTiles - 1].visible) {
 				currentColumn = column + 1;
  
 				while (currentColumn < numberOfTiles) {
-					if (tileBoard[numberOfTiles - 1][currentColumn].visible) {
+					if (tileBoard[currentColumn][numberOfTiles - 1].visible) {
 						for (let row: number = 0; row < numberOfTiles; row++) {
-							if(tileBoard[row][currentColumn].visible) {
-								tileBoard[row][column].row = tileBoard[row][currentColumn].row;
-								tileBoard[row][column].column = tileBoard[row][currentColumn].column;
-								tileBoard[row][column].color = tileBoard[row][currentColumn].color;
+							if(tileBoard[currentColumn][currentColumn].visible) {
+								tileBoard[column][row].row = tileBoard[currentColumn][row].row;
+								tileBoard[column][row].column = tileBoard[currentColumn][row].column;
+								tileBoard[column][row].color = tileBoard[currentColumn][row].color;
 							}
 						}
 		
@@ -168,8 +174,8 @@ interface Coordinates {
 		tileBoard = generateBoard();
 		// console.log(fill(3, 3, tileBoard[3][3].color));
 		console.log(tileBoard);
-		// compressRows();
-		// compressColumns();
+		compressRows();
+		compressColumns();
 	};
 
 	function handleRequestAnimationFrame(): void {
@@ -183,8 +189,8 @@ interface Coordinates {
 		const column = Math.floor(mousePosition.y / tileSize);
 
 		fill(row, column, tileBoard[row][column].color);
-		// compressRows();
-		// compressColumns();
+		//compressRows();
+		//compressColumns();
 	};
 
 	document.addEventListener("DOMContentLoaded", (handleDOMContentLoaded), false);
