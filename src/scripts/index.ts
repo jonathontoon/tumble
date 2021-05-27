@@ -30,19 +30,23 @@ interface Coordinates {
 	// };
 
 	function withinBounds(row: number, column: number): boolean {
-		return row >= 0 && row < numberOfTiles && column >= 0 && column < numberOfTiles;
+		return row >= 0 && row < tileBoard.length && column >= 0 && column < tileBoard[row].length;
 	};
 
 	function fill(row: number, column: number, color: string): void {
 		const checkedTiles: Tile[] = [];
+		let tile: Tile = tileBoard[row][column];
 
 		function flow(row: number, column: number, color: string): void {
-			if (row >= 0 && row < tileBoard.length && column >= 0 && column < tileBoard[row].length) {
-				if (!checkedTiles.includes(tileBoard[row][column])) {
-					if (tileBoard[row][column].color === color) {
-						tileBoard[row][column].visible = false;
+			if (withinBounds(row, column)) {
+				tile = tileBoard[row][column];
+
+				if (!checkedTiles.includes(tile)) {
+					if (tile.color === color) {
+						tile.visible = false;
+						tile.color = "lightgray";
 	
-						checkedTiles.push(tileBoard[row][column]);
+						checkedTiles.push(tile);
 						flow(row-1, column, color);    // check up
 						flow(row+1, column, color);    // check down
 						flow(row, column-1, color);    // check left
@@ -54,78 +58,28 @@ interface Coordinates {
 
 		flow(row, column, color);
 
-		console.log(checkedTiles.length);
-
 		if (checkedTiles.length === 1) {
-			checkedTiles[0].visible = true;
+			tile = checkedTiles[0];
+			tile.visible = true;
 		}
-	};
-
-	function tilesToMatch(row: number, column: number, color: string): void {
-		if (row < 0 || row >= numberOfTiles || column < 0 || row >= numberOfTiles) {
-			return;
-		}
-
-		if (tileBoard[row][column].color !== color) {
-			return;
-		}
-
-		tileBoard[row][column].visible = false;
-
-		tilesToMatch(row - 1, column, color);
-		tilesToMatch(row + 1, column, color);
-		tilesToMatch(row, column - 1, color);
-		tilesToMatch(row, column + 1, color);
 	};
 	
 	function compressRows(): void {
-		let currentRow: number;
-		
-		for (let column: number = 0; column < numberOfTiles; column++) {
-			for (let row: number = numberOfTiles - 1; row >= 0; row--) {
-				if (!tileBoard[column][row].visible) {
-					currentRow = row - 1;
-
-					while(currentRow >= 0) {
-						if (tileBoard[column][currentRow].visible) {
-							tileBoard[column][row].row = tileBoard[column][currentRow].row;
-							tileBoard[column][row].column = tileBoard[column][currentRow].column;
-							tileBoard[column][row].color = tileBoard[column][currentRow].color;
-
-							currentRow = 0;
+		//Fall down
+		for (let column = 0; column < numberOfTiles; column++) {
+			for (let row = numberOfTiles - 1; row >= 0; row--) {
+				if (!tileBoard[row][column].visible) {
+					for (let currentRow = row; currentRow >= 0; currentRow--) {
+						if (currentRow != 0) {
+							tileBoard[currentRow][column] = tileBoard[currentRow - 1][column];
 						}
-						currentRow--;
 					}
-				}
-			}
-		}
-	}
 	
-	function compressColumns(): void {
-		let currentColumn: number;
-
-		for(let column: number = 0; column < numberOfTiles; column++) {
-			if (!tileBoard[column][numberOfTiles - 1].visible) {
-				currentColumn = column + 1;
- 
-				while (currentColumn < numberOfTiles) {
-					if (tileBoard[currentColumn][numberOfTiles - 1].visible) {
-						for (let row: number = 0; row < numberOfTiles; row++) {
-							if(tileBoard[currentColumn][currentColumn].visible) {
-								tileBoard[column][row].row = tileBoard[currentColumn][row].row;
-								tileBoard[column][row].column = tileBoard[currentColumn][row].column;
-								tileBoard[column][row].color = tileBoard[currentColumn][row].color;
-							}
-						}
-		
-						currentColumn = numberOfTiles;
-					}
-		
-					currentColumn++;
+					row++;
 				}
 			}
 		}
-	}
+	};
 
 	function generateBoard(): Tile[][] {
 		const board: Tile[][] = [];
@@ -151,13 +105,11 @@ interface Coordinates {
 		for (let i = 0; i < numberOfTiles; i++) {
 			for (let j = 0; j < numberOfTiles; j++) {
 				const tile: Tile = tileBoard[i][j];
-				if (tile.visible) {
-					canvasContext.beginPath();
-					canvasContext.fillStyle = tile.color;
-					canvasContext.rect(tile.row * tileSize, tile.column * tileSize, tileSize, tileSize);
-					canvasContext.fill();
-					canvasContext.closePath();
-				}
+				canvasContext.beginPath();
+				canvasContext.fillStyle = tile.color;
+				canvasContext.rect(tile.column * tileSize, tile.row * tileSize, tileSize, tileSize);
+				canvasContext.fill();
+				canvasContext.closePath();
 			}
 		}
 	};
@@ -172,10 +124,7 @@ interface Coordinates {
 
 	function handleDOMContentLoaded(): void {
 		tileBoard = generateBoard();
-		// console.log(fill(3, 3, tileBoard[3][3].color));
 		console.log(tileBoard);
-		compressRows();
-		compressColumns();
 	};
 
 	function handleRequestAnimationFrame(): void {
@@ -185,12 +134,11 @@ interface Coordinates {
 
 	function handleOnClick(event: MouseEvent): void {
 		const mousePosition = getMousePosition(canvasElement, event);
-		const row = Math.floor(mousePosition.x / tileSize);
-		const column = Math.floor(mousePosition.y / tileSize);
+		const row = Math.floor(mousePosition.y / tileSize);
+		const column = Math.floor(mousePosition.x / tileSize);
 
 		fill(row, column, tileBoard[row][column].color);
-		//compressRows();
-		//compressColumns();
+		compressRows();
 	};
 
 	document.addEventListener("DOMContentLoaded", (handleDOMContentLoaded), false);
