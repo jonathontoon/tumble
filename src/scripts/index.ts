@@ -71,7 +71,7 @@ interface Coordinates {
 				if (!tileBoard[row][column].visible) {
 					for (let currentRow = row; currentRow >= 0; currentRow--) {
 						if (currentRow != 0) {
-							tileBoard[currentRow][column] = tileBoard[currentRow - 1][column];
+							tileBoard[currentRow - 1][column].visible = false;
 						}
 					}
 	
@@ -105,11 +105,13 @@ interface Coordinates {
 		for (let i = 0; i < numberOfTiles; i++) {
 			for (let j = 0; j < numberOfTiles; j++) {
 				const tile: Tile = tileBoard[i][j];
-				canvasContext.beginPath();
-				canvasContext.fillStyle = tile.color;
-				canvasContext.rect(tile.column * tileSize, tile.row * tileSize, tileSize, tileSize);
-				canvasContext.fill();
-				canvasContext.closePath();
+				if (tile.visible) {
+					canvasContext.beginPath();
+					canvasContext.fillStyle = tile.color;
+					canvasContext.rect(tile.column * tileSize, tile.row * tileSize, tileSize, tileSize);
+					canvasContext.fill();
+					canvasContext.closePath();
+				}
 			}
 		}
 	};
@@ -138,7 +140,7 @@ interface Coordinates {
 		const column = Math.floor(mousePosition.x / tileSize);
 
 		fill(row, column, tileBoard[row][column].color);
-		compressRows();
+		//compressRows();
 	};
 
 	document.addEventListener("DOMContentLoaded", (handleDOMContentLoaded), false);
