@@ -1,32 +1,70 @@
-import Canvas from "./canvas";
-import Board from "./board";
+import Tile from "./tile";
 
 class Game {
-	private canvas: Canvas;
-	private board: Board;
 
-	private animationFrameCallback: FrameRequestCallback;
+	private rowLength: number;
+	private columnLength: number;
+	
+	private tileSize: number;
+	private tileColors: string[];
 
-	constructor(tileSize: number, numberOfTiles: number) {
-		this.canvas = new Canvas("viewport", tileSize * numberOfTiles);
-		this.board = new Board(tileSize, numberOfTiles);
+	private tileBoard: Tile[][];
+	private tilePool: Tile[];
+	private filledTiles: Tile[];
 
-		this.animationFrameCallback = this.handleRequestAnimationFrame.bind(this);
-		window.requestAnimationFrame(this.animationFrameCallback);
+	constructor(tileSize: number, gridSize: number) {
+		this.rowLength = gridSize;
+		this.columnLength = gridSize;
+
+		this.tileSize = tileSize;
+		this.tileColors = ["red", "green", "blue", "orange", "purple"];
+
+		this.tileBoard = [];
+		this.tilePool = [];
+		this.filledTiles = [];
+
+		this.createBoard();
 	};
 
-	static initialize(tileSize: number, numberOfTiles: number): Game {
-		return new Game(tileSize, numberOfTiles);
+	private createBoard(): void {
+		for (let row = 0; row < this.rowLength; row++){
+			this.tileBoard[row] = [];
+			for (let column = 0; column < this.columnLength; column++){
+				const color: string = this.tileColors[Math.floor(Math.random() * this.tileColors.length)];
+				const tile: Tile = new Tile(column, row, this.tileSize, color); 
+				this.tileBoard[row].push(tile);
+			}
+		}
 	};
 
-	private handleRequestAnimationFrame(): void {
-		this.canvas.render((context: CanvasRenderingContext2D) => {
-			context.save();
-			this.board.render(context);
-			context.restore();
-		});
+	private floodFill(row: number, column: number, color: string): void {
+		if (column < 0 || row < 0 || column >= this.columnLength || row >= this.rowLength){
+			return;
+		}
 
-		window.requestAnimationFrame(this.animationFrameCallback);
+		if (this.tileBoard[row][column].isEmpty) {
+			return;
+		}
+
+		if (this.tileBoard[row][column].color !== color) {
+			return;
+		}
+
+		this.tileBoard[row][column].isEmpty = true;
+		this.filledTiles.push(this.tileBoard[row][column]);
+		
+		this.floodFill(row + 1, column, color);
+		this.floodFill(row - 1, column, color); 
+		this.floodFill(row, column + 1, color);
+		this.floodFill(row, column - 1, color);
+	};
+
+	public render(context: CanvasRenderingContext2D): void {
+		for (let row = 0; row < this.rowLength; row++){
+			for (let column = 0; column < this.columnLength; column++){
+				this.tileBoard[row][column].render(context);
+			}
+		}
 	};
 };
 

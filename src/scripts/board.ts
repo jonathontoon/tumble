@@ -1,4 +1,4 @@
-import Sprite from "./sprite";
+import Sprite from "./tile";
 
 class Board {
 	private tileSize: number;

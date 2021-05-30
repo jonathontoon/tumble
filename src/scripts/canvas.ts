@@ -4,16 +4,17 @@ class Canvas {
 	private width: number;
 	private height: number;
 
-	constructor(id: string, size: number) {
+	constructor(id: string, width: number, height: number) {
 		this.element = document.getElementById(id) as HTMLCanvasElement;
 		this.context = this.element.getContext("2d") as CanvasRenderingContext2D;
 		
-		this.element.style.width = `${size}px`;
-		this.element.style.height = `${size}px`;
-		this.element.setAttribute("width", `${size}`);
-		this.element.setAttribute("height", `${size}`);
-		this.width = size;
-		this.height = size;
+		this.width = width;
+		this.height = height;
+
+		this.element.style.width = `${this.width}px`;
+		this.element.style.height = `${this.height}px`;
+		this.element.setAttribute("width", `${this.width}`);
+		this.element.setAttribute("height", `${this.height}`);
 	};
 
 	public render(callback: { (context: CanvasRenderingContext2D): void; }): void {

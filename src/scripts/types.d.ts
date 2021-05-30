@@ -1,6 +1,6 @@
-export interface Tile {
-	row: number;
-	column: number;
+interface TileArguments {
+	x: number;
+	y: number;
+	size: number;
 	color: string;
-	isEmpty: boolean;
 };
