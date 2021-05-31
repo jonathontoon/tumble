@@ -1,4 +1,6 @@
 import Tile from "./tile";
+import Selection from "./selection";
+
 import { Direction, Rotate } from "./enums";
 
 class Game {
@@ -13,6 +15,8 @@ class Game {
 	private tilePool: Tile[];
 	private filledTiles: Tile[];
 
+	private selection: Selection;
+
 	constructor(tileSize: number, gridSize: number) {
 		this.rowLength = gridSize;
 		this.columnLength = gridSize;
@@ -24,21 +28,20 @@ class Game {
 		this.tilePool = [];
 		this.filledTiles = [];
 
+		this.selection = new Selection(0, 0, this.tileSize, "#FFFFFF");
+
 		this.createBoard();
 	};
 
 	private createBoard(): void {
-		for (let row = 0; row < this.rowLength; row++){
+		for (let row = 0; row < this.rowLength; row++) {
 			this.tileBoard[row] = [];
-			for (let column = 0; column < this.columnLength; column++){
-				this.tileBoard[row].push(this.addTile(row, column));
+			for (let column = 0; column < this.columnLength; column++) {
+				const color: string = this.tileColors[Math.floor(Math.random() * this.tileColors.length)];
+				const tile: Tile = new Tile(column, row, this.tileSize, color); 
+				this.tileBoard[row].push(tile);
 			}
 		}
-	};
-
-	private addTile(row: number, column: number): Tile {
-		const color: string = this.tileColors[Math.floor(Math.random() * this.tileColors.length)];
-		return new Tile(column, row, this.tileSize, color); 
 	};
 
 	private floodFill(row: number, column: number, color: string): void {
@@ -63,12 +66,35 @@ class Game {
 		this.floodFill(row, column - 1, color);
 	};
 
-	public moveSelection(direction: Direction): void {
-		console.log(direction);
+	public updateSelection(direction: Direction): void {
+		if (direction === Direction.Up) {
+			if (this.selection.y !== 0) {
+				this.selection.move(direction);
+			}
+		}
+
+		if (direction === Direction.Down) {
+			if (this.selection.y !== this.rowLength - 1) {
+				this.selection.move(direction);
+			}
+		}
+
+		if (direction === Direction.Left) {
+			if (this.selection.x !== 0) {
+				this.selection.move(direction);
+			}
+		}
+
+		if (direction === Direction.Right) {
+			if (this.selection.x !== this.columnLength - 1) {
+				this.selection.move(direction);
+			}
+		}
 	};
 
 	public clearTile(): void {
-		console.log("Clear");
+		const currentTile: Tile = this.tileBoard[this.selection.y][this.selection.x];
+		this.floodFill(currentTile.y, currentTile.x, currentTile.color);
 	};
 
 	public rotateBoard(direction: Rotate): void {
@@ -81,6 +107,8 @@ class Game {
 				this.tileBoard[row][column].render(context);
 			}
 		}
+
+		this.selection.render(context);
 	};
 };
 

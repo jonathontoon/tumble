@@ -27,19 +27,19 @@ import { Direction, Rotate } from "./enums";
 		const key: string = event.code;
 		switch (key) {
 			case "KeyA": {
-				game.moveSelection(Direction.Left);
+				game.updateSelection(Direction.Left);
 				break;
 			}
 			case "KeyS": {
-				game.moveSelection(Direction.Down);
+				game.updateSelection(Direction.Down);
 				break;
 			}
 			case "KeyD": {
-				game.moveSelection(Direction.Right);
+				game.updateSelection(Direction.Right);
 				break;
 			}
 			case "KeyW": {
-				game.moveSelection(Direction.Up);
+				game.updateSelection(Direction.Up);
 				break;
 			}
 			case "Space": {

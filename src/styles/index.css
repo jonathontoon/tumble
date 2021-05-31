@@ -11,4 +11,6 @@ canvas {
     transform: translate(-50%, -50%);
     width: 800px;
     height: 800px;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }

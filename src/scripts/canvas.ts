@@ -19,6 +19,7 @@ class Canvas {
 
 	public render(callback: { (context: CanvasRenderingContext2D): void; }): void {
 		this.context.clearRect(0, 0, this.width, this.height);
+		this.context.imageSmoothingEnabled = false;
 		callback(this.context);
 	};
 };
