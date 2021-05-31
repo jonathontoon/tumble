@@ -5,6 +5,7 @@ class Tile {
 	private width: number;
 	private height: number;
 	public isEmpty: boolean;
+	public isSelected: boolean;
 
 	constructor(x: number, y: number, size: number, color: string) {
 		this.x = x;
@@ -13,6 +14,7 @@ class Tile {
 		this.height = size;
 		this.color = color;
 		this.isEmpty = false;
+		this.isSelected = false;
 	};
 
 	public render(context: CanvasRenderingContext2D): void {

@@ -61,7 +61,7 @@ import { Direction, Rotate } from "./enums";
 		};
 	};
 
-	document.addEventListener("DOMContentLoaded", (handleDOMContentLoaded), false);
+	document.addEventListener("DOMContentLoaded", handleDOMContentLoaded, false);
 	window.requestAnimationFrame(handleRequestAnimationFrame);
 	window.addEventListener("keypress", handleKeyPress, false);
 
