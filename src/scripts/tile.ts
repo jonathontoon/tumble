@@ -4,8 +4,6 @@ class Tile {
 	public color: string;
 	private width: number;
 	private height: number;
-	public isEmpty: boolean;
-	public isSelected: boolean;
 
 	constructor(x: number, y: number, size: number, color: string) {
 		this.x = x;
@@ -13,18 +11,14 @@ class Tile {
 		this.width = size;
 		this.height = size;
 		this.color = color;
-		this.isEmpty = false;
-		this.isSelected = false;
 	};
 
 	public render(context: CanvasRenderingContext2D): void {
-		if (!this.isEmpty) {
-			context.beginPath();
-			context.fillStyle = this.color;
-			context.rect(this.x * this.width, this.y * this.height, this.width, this.height);
-			context.fill();
-			context.closePath();
-		}
+		context.beginPath();
+		context.fillStyle = this.color;
+		context.rect(this.x * this.width, this.y * this.height, this.width, this.height);
+		context.fill();
+		context.closePath();
 	};
 };
 
