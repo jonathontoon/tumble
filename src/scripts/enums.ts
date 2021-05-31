@@ -1,8 +1,13 @@
 export enum Direction {
-	Up = "up",
-	Down = "down",
-	Left = "left",
-	Right = "right"
+	Up = "Up",
+	Down = "Down",
+	Left = "Left",
+	Right = "Right"
+};
+
+export enum Rotate {
+	CounterClockwise = "CounterClockwise",
+	Clockwise = "Clockwise"
 };
 
 export enum Color {

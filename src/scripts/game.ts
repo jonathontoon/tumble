@@ -1,3 +1,4 @@
+import { Direction, Rotate } from "./enums";
 import Tile from "./tile";
 
 class Game {
@@ -30,11 +31,14 @@ class Game {
 		for (let row = 0; row < this.rowLength; row++){
 			this.tileBoard[row] = [];
 			for (let column = 0; column < this.columnLength; column++){
-				const color: string = this.tileColors[Math.floor(Math.random() * this.tileColors.length)];
-				const tile: Tile = new Tile(column, row, this.tileSize, color); 
-				this.tileBoard[row].push(tile);
+				this.tileBoard[row].push(this.addTile(row, column));
 			}
 		}
+	};
+
+	private addTile(row: number, column: number): Tile {
+		const color: string = this.tileColors[Math.floor(Math.random() * this.tileColors.length)];
+		return new Tile(column, row, this.tileSize, color); 
 	};
 
 	private floodFill(row: number, column: number, color: string): void {
@@ -57,6 +61,18 @@ class Game {
 		this.floodFill(row - 1, column, color); 
 		this.floodFill(row, column + 1, color);
 		this.floodFill(row, column - 1, color);
+	};
+
+	public moveSelection(direction: Direction): void {
+		console.log(direction);
+	};
+
+	public clearTile(): void {
+		console.log("Clear");
+	};
+
+	public rotateBoard(direction: Rotate): void {
+		console.log(direction);
 	};
 
 	public render(context: CanvasRenderingContext2D): void {
