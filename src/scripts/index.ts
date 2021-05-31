@@ -1,6 +1,5 @@
 import Canvas from "./canvas";
 import Game from "./game";
-
 import { Direction, Rotate } from "./enums";
 
 ((): void => {

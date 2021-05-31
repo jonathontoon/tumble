@@ -1,5 +1,5 @@
-import { Direction, Rotate } from "./enums";
 import Tile from "./tile";
+import { Direction, Rotate } from "./enums";
 
 class Game {
 
