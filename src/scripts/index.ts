@@ -1,8 +1,9 @@
 import Canvas from "./canvas";
-import { Direction, Rotate } from "./enums";
 import Game from "./game";
 
-(function (): void {
+import { Direction, Rotate } from "./enums";
+
+((): void => {
 
 	const gridSize: number = 8;
 	const tileSize: number = 100;
@@ -10,12 +11,12 @@ import Game from "./game";
 	let canvas: Canvas;
 	let game: Game;
 	
-	function handleDOMContentLoaded(): void {
+	const handleDOMContentLoaded = (): void => {
 		canvas = new Canvas("viewport", tileSize * gridSize, tileSize * gridSize);
 		game = new Game(tileSize, gridSize);
 	};
 
-	function handleRequestAnimationFrame(): void {
+	const handleRequestAnimationFrame = (): void => {
 		canvas.render((context: CanvasRenderingContext2D): void => {
 			game.render(context);
 		});
@@ -23,7 +24,7 @@ import Game from "./game";
 		window.requestAnimationFrame(handleRequestAnimationFrame);
 	};
 
-	function handleKeyPress(event: KeyboardEvent): void {
+	const handleKeyPress = (event: KeyboardEvent): void => {
 		const key: string = event.code;
 		switch (key) {
 			case "KeyA": {
