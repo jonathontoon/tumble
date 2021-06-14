@@ -11,9 +11,9 @@ export enum Rotate {
 };
 
 export enum Color {
-	Purple = "purple",
-	Blue = "blue",
-	Orange = "orange",
-	Red = "red",
-	Green = "green"
+	Purple = 0,
+	Blue = 1,
+	Orange = 2,
+	Red = 3,
+	Green = 4
 };

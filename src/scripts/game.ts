@@ -9,7 +9,7 @@ class Game {
 	private columnLength: number;
 	
 	private tileSize: number;
-	private tileColors: string[];
+	private tileColors: Color[];
 
 	private tileBoard: (Tile | null)[][];
 	private filledTiles: Tile[];
@@ -72,7 +72,7 @@ class Game {
 					let holesBelow = 0;
 					for (let z = i + 1; z < this.rowLength; z++){
 						if (this.tileBoard[z][j] === null){
-							holesBelow ++;
+							holesBelow++;
 						}    
 					}
 					if (holesBelow){  
@@ -176,7 +176,37 @@ class Game {
 	};
 
 	public rotateBoard(direction: Rotate): void {
-		console.log(direction);
+		// create a new NxM destination array
+		const destination: (Tile | null)[][] = [];
+		for (let i = 0; i < this.rowLength; i++) {
+			destination[i] = [];
+		}
+
+		// start copying from source into destination
+		for (let row = 0; row < this.rowLength; row++) {
+			for (let column = 0; column < this.columnLength; column++) {
+				if (direction === Rotate.Clockwise) {
+					destination[row][column] = this.tileBoard[this.columnLength - column - 1][row];
+				} else if (direction === Rotate.CounterClockwise) {
+					destination[row][column] = this.tileBoard[column][this.rowLength - row - 1];
+				}
+			}
+		}
+
+		// return the destination matrix
+		this.tileBoard = destination;
+
+		for (let row = 0; row < this.rowLength; row++) {
+			for (let column = 0; column < this.columnLength; column++) {
+				if (this.tileBoard[row][column] !== null) {
+					this.tileBoard[row][column].x = column;
+					this.tileBoard[row][column].y = row;
+				}
+			}
+		}
+
+		this.fillVerticalGaps();
+		this.fillHorizontalGaps();
 	};
 
 	public render(context: CanvasRenderingContext2D): void {
