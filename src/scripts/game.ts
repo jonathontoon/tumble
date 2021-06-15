@@ -1,7 +1,7 @@
 import Tile from "./tile";
 import Selection from "./selection";
 
-import { Color, Direction, Rotate } from "./enums";
+import { Direction, Rotate, Sprite } from "./enums";
 
 class Game {
 
@@ -9,7 +9,7 @@ class Game {
 	private columnLength: number;
 	
 	private tileSize: number;
-	private tileColors: Color[];
+	private tileSprites: Sprite[];
 
 	private tileBoard: (Tile | null)[][];
 	private filledTiles: Tile[];
@@ -21,23 +21,25 @@ class Game {
 		this.columnLength = gridSize;
 
 		this.tileSize = tileSize;
-		this.tileColors = [Color.Red, Color.Blue, Color.Green, Color.Orange, Color.Purple];
+		this.tileSprites = [Sprite.Orange, Sprite.Blue, Sprite.Green, Sprite.Purple, Sprite.Red];
 
 		this.tileBoard = [];
 		this.filledTiles = [];
 
-		this.selection = new Selection(0, 0, this.tileSize, "#FFFFFF");
+		this.selection = new Selection(0, 0, this.tileSize, Sprite.SelectionOut);
 
 		this.createBoard();
 	};
 
 	private createBoard(): void {
+		let counter: number = 0;
 		for (let row = 0; row < this.rowLength; row++) {
 			this.tileBoard[row] = [];
 			for (let column = 0; column < this.columnLength; column++) {
-				const color: string = this.tileColors[Math.floor(Math.random() * this.tileColors.length)];
-				const tile: Tile = new Tile(column, row, this.tileSize, color); 
+				const sprite: Sprite = this.tileSprites[Math.floor(Math.random() * this.tileSprites.length)];
+				const tile: Tile = new Tile(counter, column, row, this.tileSize, sprite); 
 				this.tileBoard[row].push(tile);
+				counter++;
 			}
 		}
 	};
@@ -107,7 +109,7 @@ class Game {
 		console.log(this.tileBoard);
 	};
 
-	private floodFill(row: number, column: number, color: string): void {
+	private floodFill(row: number, column: number, sprite: Sprite): void {
 		if (column < 0 || row < 0 || column >= this.columnLength || row >= this.rowLength){
 			return;
 		}
@@ -118,7 +120,7 @@ class Game {
 			return;
 		}
 
-		if (tile.color !== color) {
+		if (tile.sprite !== sprite) {
 			return;
 		}
 
@@ -128,10 +130,10 @@ class Game {
 
 		this.filledTiles.push(tile);
 		
-		this.floodFill(row + 1, column, color);
-		this.floodFill(row - 1, column, color); 
-		this.floodFill(row, column + 1, color);
-		this.floodFill(row, column - 1, color);
+		this.floodFill(row + 1, column, sprite);
+		this.floodFill(row - 1, column, sprite); 
+		this.floodFill(row, column + 1, sprite);
+		this.floodFill(row, column - 1, sprite);
 	};
 
 	public updateSelection(direction: Direction): void {
@@ -165,7 +167,7 @@ class Game {
 
 		const currentTile: Tile | null = this.tileBoard[this.selection.y][this.selection.x];
 		if (currentTile) {
-			this.floodFill(currentTile.y, currentTile.x, currentTile.color);
+			this.floodFill(currentTile.y, currentTile.x, currentTile.sprite);
 		}
 
 		if (this.filledTiles.length > 1) {
@@ -176,8 +178,9 @@ class Game {
 	};
 
 	public rotateBoard(direction: Rotate): void {
-		// create a new NxM destination array
+		const selectedTile: Tile | null = this.tileBoard[this.selection.y][this.selection.x];
 		const destination: (Tile | null)[][] = [];
+		
 		for (let i = 0; i < this.rowLength; i++) {
 			destination[i] = [];
 		}
@@ -198,15 +201,34 @@ class Game {
 
 		for (let row = 0; row < this.rowLength; row++) {
 			for (let column = 0; column < this.columnLength; column++) {
-				if (this.tileBoard[row][column] !== null) {
-					this.tileBoard[row][column].x = column;
-					this.tileBoard[row][column].y = row;
+				const currentTitle: Tile | null = this.tileBoard[row][column];
+				if (currentTitle) {
+					if (currentTitle.x === this.selection.x && currentTitle.y === this.selection.y) {
+						this.selection.x = column;
+						this.selection.y = row;
+					}
+
+					currentTitle.x = column;
+					currentTitle.y = row;
 				}
+				this.tileBoard[row][column] = currentTitle;
 			}
 		}
 
 		this.fillVerticalGaps();
 		this.fillHorizontalGaps();
+
+		for (let row = 0; row < this.rowLength; row++) {
+			for (let column = 0; column < this.columnLength; column++) {
+				const currentTitle: Tile | null = this.tileBoard[row][column];
+				if (currentTitle && selectedTile) {
+					if (currentTitle.id === selectedTile.id) {
+						this.selection.x = currentTitle.x;
+						this.selection.y = currentTitle.y;
+					}
+				}
+			}
+		}
 	};
 
 	public render(context: CanvasRenderingContext2D): void {

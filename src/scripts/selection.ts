@@ -1,20 +1,24 @@
-import { Direction } from "./enums";
+import { Sprite, Direction } from "./enums";
 
 class Selection {
 	public x: number;
 	public y: number;
-	public color: string;
+	public sprite: Sprite;
 	private width: number;
 	private height: number;
-	private lineWidth: number;
 
-	constructor(x: number, y: number, size: number, color: string) {
+	private spritesheet: HTMLImageElement;
+
+	constructor(x: number, y: number, size: number, sprite: Sprite) {
 		this.x = x;
 		this.y = y;
 		this.width = size;
 		this.height = size;
-		this.color = color;
-		this.lineWidth = 4;
+
+		this.sprite = sprite;
+
+		this.spritesheet = new Image();
+		this.spritesheet.src = "./images/spritesheet.png";
 	};
 
 	public move(direction: Direction): void {
@@ -40,10 +44,7 @@ class Selection {
 
 	public render(context: CanvasRenderingContext2D): void {
 		context.beginPath();
-		context.strokeStyle = this.color;
-		context.lineWidth = this.lineWidth;
-		context.rect((this.x * this.width) + this.lineWidth/2, (this.y * this.height) + this.lineWidth/2, this.width - this.lineWidth, this.height - this.lineWidth);
-		context.stroke();
+		context.drawImage(this.spritesheet, this.sprite*16, 0, 16, 16, this.x * this.width, this.y * this.height, this.width, this.height);
 		context.closePath();
 	};
 };

@@ -10,10 +10,12 @@ export enum Rotate {
 	Clockwise = "Clockwise"
 };
 
-export enum Color {
-	Purple = 0,
+export enum Sprite {
+	Orange = 0,
 	Blue = 1,
-	Orange = 2,
-	Red = 3,
-	Green = 4
+	Green = 2,
+	Purple = 3,
+	Red = 4,
+	SelectionOut = 5,
+	SelectionIn = 6
 };
