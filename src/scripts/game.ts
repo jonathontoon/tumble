@@ -231,9 +231,10 @@ class Game {
 		}
 	};
 
-	public render(context: CanvasRenderingContext2D): void {
-		for (let row = 0; row < this.rowLength; row++){
-			for (let column = 0; column < this.columnLength; column++){
+	public render(context: CanvasRenderingContext2D, now: number): void {
+		for (let row = 0; row < this.rowLength; row++) {
+			for (let column = 0; column < this.columnLength; column++) {
+
 				const currentTile: Tile | null = this.tileBoard[row][column];
 				if (currentTile) {
 					currentTile.render(context);
@@ -241,7 +242,7 @@ class Game {
 			}
 		}
 
-		this.selection.render(context);
+		this.selection.render(context, now);
 	};
 };
 

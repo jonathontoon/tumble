@@ -9,13 +9,15 @@ class Selection {
 
 	private spritesheet: HTMLImageElement;
 
-	constructor(x: number, y: number, size: number, sprite: Sprite) {
+	private lastRender: number = 0;
+
+	constructor(x: number, y: number, size: number) {
 		this.x = x;
 		this.y = y;
 		this.width = size;
 		this.height = size;
 
-		this.sprite = sprite;
+		this.sprite = Sprite.SelectionOut;
 
 		this.spritesheet = new Image();
 		this.spritesheet.src = "./images/spritesheet.png";
@@ -42,7 +44,12 @@ class Selection {
 		}
 	};
 
-	public render(context: CanvasRenderingContext2D): void {
+	public render(context: CanvasRenderingContext2D, now: number): void {
+		if(!this.lastRender || now - this.lastRender >= 2*250) {
+			this.lastRender = now;
+			this.sprite = this.sprite === Sprite.SelectionOut ? Sprite.SelectionIn : Sprite.SelectionOut;
+		}
+
 		context.beginPath();
 		context.drawImage(this.spritesheet, this.sprite*16, 0, 16, 16, this.x * this.width, this.y * this.height, this.width, this.height);
 		context.closePath();

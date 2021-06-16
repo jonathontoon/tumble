@@ -15,9 +15,9 @@ import { Direction, Rotate } from "./enums";
 		game = new Game(tileSize, gridSize);
 	};
 
-	const handleRequestAnimationFrame = (): void => {
+	const handleRequestAnimationFrame = (now: number): void => {
 		canvas.render((context: CanvasRenderingContext2D): void => {
-			game.render(context);
+			game.render(context, now);
 		});
 
 		window.requestAnimationFrame(handleRequestAnimationFrame);
