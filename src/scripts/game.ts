@@ -11,7 +11,7 @@ class Game {
 	private tileSize: number;
 	private tileSprites: Sprite[];
 
-	private tileBoard: (Tile | null)[][];
+	private tileBoard: Tile[][];
 	private filledTiles: Tile[];
 
 	private selection: Selection;
@@ -26,7 +26,7 @@ class Game {
 		this.tileBoard = [];
 		this.filledTiles = [];
 
-		this.selection = new Selection(0, 0, this.tileSize, Sprite.SelectionOut);
+		this.selection = new Selection(0, 0, this.tileSize);
 
 		this.createBoard();
 	};
@@ -47,7 +47,7 @@ class Game {
 	private tilesInColumn(column: number): number {
 		let result = 0;
 		for (let i = 0; i < this.rowLength; i++) {
-			if (this.tileBoard[i][column] !== null){
+			if (!this.tileBoard[i][column].empty){
 				result++;
 			}
 		}
@@ -55,16 +55,18 @@ class Game {
 	};
 
 	private swapTiles(fromRow: number, fromCol: number, toRow: number, toCol: number): void {
-		this.tileBoard[toRow][toCol] = this.tileBoard[fromRow][fromCol];
+		const swappingFrom: Tile = this.tileBoard[fromRow][fromCol];
+		const swappingTo: Tile = this.tileBoard[toRow][toCol];
 
-		const tile: Tile | null = this.tileBoard[toRow][toCol];
-		if (tile !== null) {
-			tile.x = toCol;
-			tile.y = toRow;
-		}
+		swappingFrom.id = swappingTo.id;
+		swappingFrom.x = toCol;
+		swappingFrom.y = toRow;
 		
-		this.tileBoard[toRow][toCol] = tile;
-		this.tileBoard[fromRow][fromCol] = null;
+		swappingTo.empty = true;
+		swappingTo.id = swappingFrom.id;
+		
+		this.tileBoard[toRow][toCol] = swappingFrom;
+		this.tileBoard[fromRow][fromCol] = swappingTo;
 	};
 
 	private fillVerticalGaps(): void {
@@ -73,7 +75,7 @@ class Game {
 				if (this.tileBoard[i][j] !== null){
 					let holesBelow = 0;
 					for (let z = i + 1; z < this.rowLength; z++){
-						if (this.tileBoard[z][j] === null){
+						if (this.tileBoard[z][j].empty){
 							holesBelow++;
 						}    
 					}
@@ -91,7 +93,7 @@ class Game {
 				for (let j = i + 1; j < this.columnLength; j++){
 					if (this.tilesInColumn(j) !== 0){
 						for (let z = 0; z < this.rowLength; z++){
-							if (this.tileBoard[z][j] !== null){
+							if (!this.tileBoard[z][j].empty) {
 								this.swapTiles(z, j, z, i);
 							}    
 						}
@@ -103,10 +105,9 @@ class Game {
 	};
 
 	public destroyTiles(): void {
-		for (let i = 0; i < this.filledTiles.length; i++){
-			this.tileBoard[this.filledTiles[i].y][this.filledTiles[i].x] = null;
+		for (let i = 0; i < this.filledTiles.length; i++) {
+			this.tileBoard[this.filledTiles[i].y][this.filledTiles[i].x].empty = true;
 		}
-		console.log(this.tileBoard);
 	};
 
 	private floodFill(row: number, column: number, sprite: Sprite): void {
@@ -114,17 +115,9 @@ class Game {
 			return;
 		}
 
-		const tile: Tile | null = this.tileBoard[row][column];
+		const tile: Tile = this.tileBoard[row][column];
 
-		if (tile === null) {
-			return;
-		}
-
-		if (tile.sprite !== sprite) {
-			return;
-		}
-
-		if (this.filledTiles.includes(tile)) {
+		if (tile.empty || tile.sprite !== sprite || this.filledTiles.includes(tile)) {
 			return;
 		}
 
@@ -165,21 +158,22 @@ class Game {
 	public clearTile(): void {
 		this.filledTiles = [];
 
-		const currentTile: Tile | null = this.tileBoard[this.selection.y][this.selection.x];
-		if (currentTile) {
-			this.floodFill(currentTile.y, currentTile.x, currentTile.sprite);
-		}
+		const currentTile: Tile = this.tileBoard[this.selection.y][this.selection.x];
+		this.floodFill(currentTile.y, currentTile.x, currentTile.sprite);
 
 		if (this.filledTiles.length > 1) {
 			this.destroyTiles();
 			this.fillVerticalGaps();
 			this.fillHorizontalGaps();
 		}
+
+		console.log(this.tileBoard);
 	};
 
 	public rotateBoard(direction: Rotate): void {
-		const selectedTile: Tile | null = this.tileBoard[this.selection.y][this.selection.x];
-		const destination: (Tile | null)[][] = [];
+		const selectedTile: Tile = this.tileBoard[this.selection.y][this.selection.x];
+		console.log(selectedTile.sprite);
+		const destination: Tile[][] = [];
 		
 		for (let i = 0; i < this.rowLength; i++) {
 			destination[i] = [];
@@ -201,7 +195,7 @@ class Game {
 
 		for (let row = 0; row < this.rowLength; row++) {
 			for (let column = 0; column < this.columnLength; column++) {
-				const currentTitle: Tile | null = this.tileBoard[row][column];
+				const currentTitle: Tile = this.tileBoard[row][column];
 				if (currentTitle) {
 					if (currentTitle.x === this.selection.x && currentTitle.y === this.selection.y) {
 						this.selection.x = column;
@@ -220,12 +214,10 @@ class Game {
 
 		for (let row = 0; row < this.rowLength; row++) {
 			for (let column = 0; column < this.columnLength; column++) {
-				const currentTitle: Tile | null = this.tileBoard[row][column];
-				if (currentTitle && selectedTile) {
-					if (currentTitle.id === selectedTile.id) {
-						this.selection.x = currentTitle.x;
-						this.selection.y = currentTitle.y;
-					}
+				const currentTitle: Tile = this.tileBoard[row][column];
+				if (currentTitle.id === selectedTile.id) {
+					this.selection.x = currentTitle.x;
+					this.selection.y = currentTitle.y;
 				}
 			}
 		}
@@ -234,9 +226,8 @@ class Game {
 	public render(context: CanvasRenderingContext2D, now: number): void {
 		for (let row = 0; row < this.rowLength; row++) {
 			for (let column = 0; column < this.columnLength; column++) {
-
-				const currentTile: Tile | null = this.tileBoard[row][column];
-				if (currentTile) {
+				const currentTile: Tile = this.tileBoard[row][column];
+				if (!currentTile.empty) {
 					currentTile.render(context);
 				}
 			}

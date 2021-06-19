@@ -4,7 +4,7 @@ import { Direction, Rotate } from "./enums";
 
 ((): void => {
 
-	const gridSize: number = 8;
+	const gridSize: number = 12;
 	const tileSize: number = 65;
 
 	let canvas: Canvas;
