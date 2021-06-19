@@ -106,7 +106,7 @@
           outfile: "bundle.min.js",
           bundle: true,
           minify: true,
-          sourcemap: false
+          sourcemap: true
         }))
         .pipe(gulp.dest(paths.scripts.output))
         .pipe(size({ pretty: true, showFiles: true, showTotal: false }))

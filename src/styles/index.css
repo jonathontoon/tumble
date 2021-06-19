@@ -1,7 +1,7 @@
 @import url("normalize.css");
 
 html, body {
-    background-color: #061222;
+    background-color: #202c3d;
 }
 
 canvas {
@@ -9,8 +9,6 @@ canvas {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 800px;
-    height: 800px;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
 }

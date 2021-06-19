@@ -4,8 +4,8 @@ import { Direction, Rotate } from "./enums";
 
 ((): void => {
 
-	const gridSize: number = 8;
-	const tileSize: number = 100;
+	const gridSize: number = 10;
+	const tileSize: number = 65;
 
 	let canvas: Canvas;
 	let game: Game;
@@ -15,9 +15,9 @@ import { Direction, Rotate } from "./enums";
 		game = new Game(tileSize, gridSize);
 	};
 
-	const handleRequestAnimationFrame = (): void => {
+	const handleRequestAnimationFrame = (now: number): void => {
 		canvas.render((context: CanvasRenderingContext2D): void => {
-			game.render(context);
+			game.render(context, now);
 		});
 
 		window.requestAnimationFrame(handleRequestAnimationFrame);
